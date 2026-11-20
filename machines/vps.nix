@@ -6,6 +6,7 @@
     ./hardware/ovh-vps-disk.nix
     ./hardware/ovh-vps.nix
     ../modules/server/tuwunel.nix
+	../modules/server/tailscale.nix
   ];
 
   boot.loader.grub = {

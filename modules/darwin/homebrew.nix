@@ -33,12 +33,12 @@
       "gimp"
       "helium-browser"
       "musicbrainz-picard"
-      "nordvpn"
       "prismlauncher"
       "qbittorrent"
       "rectangle"
       "rstudio"
       "steam"
+	  "tailscale-app"
       "vesktop"
     ];
   };

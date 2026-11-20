@@ -40,7 +40,7 @@ secrets/secrets.nix    agenix recipients
 
 ## Macs
 
-The checkout must live at `~/Development/nix-config-mono` (`configDir` in
+The checkout must live at `~/Development/nix-config` (`configDir` in
 `flake.nix`); the `rebuild` alias and `nix-init` use it.
 Homebrew must be installed before the first switch: nix-darwin manages casks
 but does not install Homebrew itself.
@@ -89,7 +89,7 @@ On the VPS itself:
 
 From a Mac, in this checkout (`vps-sync` alias):
 
-    nix run nixpkgs#nixos-rebuild -- switch --flake .#ovh-vps --target-host root@15.204.249.152 --build-host root@15.204.249.152
+    nix run nixpkgs#nixos-rebuild -- switch --flake .#ovh-vps --target-host USER@IP_ADDRESS --build-host USER@IP_ADDRESS
 
 `machines/hardware/homelab.nix` is a placeholder (dummy root filesystem and
 boot loader) so `nix flake check` can evaluate the homelab; do not deploy it.
