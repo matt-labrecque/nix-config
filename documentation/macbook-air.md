@@ -128,21 +128,6 @@ Mac secrets use agenix through Home Manager.
 - Secret: `secrets/github-email.age` → `age.secrets.github-email`, decrypted
   into the per-user temp directory and exposed through git's `includes`.
 
-### Known issue: the secret path overwrites the repo file
-
-`home/darwin/git.nix` sets the agenix output `path` to
-`${configDir}/secrets/github-email.age`, which is the encrypted file in the
-repo. On this machine that file is now a symlink to the agenix temp output
-(`/var/folders/.../T//agenix/github-email`), not the encrypted content. Git
-reports it as a type change (`AT` in `git status`), and the staged blob is still
-the encrypted content.
-
-Decided fix (not yet applied; code change pending): point the agenix output
-for `github-email` at a path outside the repo (for example under `$HOME`), so
-`secrets/github-email.age` stays a regular encrypted file. Until that change is
-made, do not commit the working-tree symlink. Verify after the change that
-`git status` shows no type change for `secrets/github-email.age`.
-
 ## Setup from scratch
 
 1. Install Homebrew (not automated by this repo; `homebrew.nix` refers to a
