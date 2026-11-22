@@ -6,7 +6,7 @@
     ./hardware/ovh-vps-disk.nix
     ./hardware/ovh-vps.nix
     ../modules/server/tuwunel.nix
-	../modules/server/tailscale.nix
+    ../modules/server/tailscale.nix
   ];
 
   boot.loader.grub = {
@@ -36,6 +36,7 @@
     settings.PasswordAuthentication = false;
   };
 
+  # TODO: This should be a secret using agenix
   users.users.root.openssh.authorizedKeys.keys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIeEZKXAJ0We9NYwQmC4fENGXcwio4B++M7iWWwkn2qD mheenan@Matts-MacBook-Air.local"
   ];

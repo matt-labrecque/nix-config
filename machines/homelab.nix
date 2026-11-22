@@ -25,7 +25,7 @@
 
   nixpkgs.hostPlatform = "x86_64-linux";
 
-  homelab.domain = "home.mlabrecque.dev";
+  homelab.domain = "lab.mlabrecque.dev";
   # Set after `tailscale up` (`tailscale ip -4`) to enable AdGuard's rewrites
   # homelab.tailscaleIPv4 = "";
 

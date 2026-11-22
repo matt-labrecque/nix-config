@@ -18,8 +18,10 @@
 
   fonts.packages = [ pkgs.nerd-fonts.caskaydia-cove ];
 
-  # agenix CLI for editing secrets/ (see secrets/secrets.nix)
-  environment.systemPackages = [ inputs.agenix.packages.${pkgs.stdenv.hostPlatform.system}.default ];
+  environment.systemPackages = [
+    # agenix CLI for editing secrets/ (see secrets/secrets.nix)
+    inputs.agenix.packages.${pkgs.stdenv.hostPlatform.system}.default
+  ];
 
   system.defaults = {
     # Disable Press and Hold so keyboard navigation works

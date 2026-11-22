@@ -9,8 +9,6 @@
       font-family = "CaskaydiaCove NF";
       font-size = 14;
       background-opacity = 0.9;
-      # Optional on macOS for a frosted-glass effect:
-      # background-blur-radius = 20;
     };
   };
 }

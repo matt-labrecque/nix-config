@@ -1,5 +1,5 @@
 {
-  description = "Nix configurations for MacBook Air, Mac mini, VPS, and homelab";
+  description = "Matt Labrecque's Monorepo for Nix Configurations'";
 
   inputs = {
     # Macs: unstable
@@ -67,6 +67,8 @@
           # Existing files like ~/.zshrc are moved aside instead of failing activation
           backupFileExtension = "before-nix";
           extraSpecialArgs = specialArgs;
+          # age.* options for user-level secrets on every machine
+          sharedModules = [ agenix.homeManagerModules.default ];
           users.${specialArgs.username} = import homeModule;
         };
       };
@@ -133,7 +135,6 @@
     {
       darwinConfigurations = {
         macbook-air = mkDarwin "macbook-air";
-        mac-mini = mkDarwin "mac-mini";
       };
 
       nixosConfigurations = {
@@ -149,7 +150,6 @@
       checks = {
         aarch64-darwin = {
           macbook-air = self.darwinConfigurations.macbook-air.config.system.build.toplevel;
-          mac-mini = self.darwinConfigurations.mac-mini.config.system.build.toplevel;
         };
         x86_64-linux.ovh-vps = self.nixosConfigurations.ovh-vps.config.system.build.toplevel;
       };
@@ -166,7 +166,7 @@
         };
         node = {
           path = ./templates/node;
-          description = "Node.js with pnpm";
+          description = "Node.js with bun";
         };
         go = {
           path = ./templates/go;
