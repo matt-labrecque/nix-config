@@ -16,6 +16,7 @@
       runtimePkgs = with pkgs; [
         tinymist
         websocat
+
       ];
     };
 }

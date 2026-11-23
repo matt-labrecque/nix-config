@@ -46,6 +46,44 @@
           config = "require('autoclose').setup()";
         };
 
+        # Splitview (edit left, preview right): <leader>s, mapped in nvim/init.lua
+        markview = {
+          data = pkgs.vimPlugins.markview-nvim;
+          config = "require('markview').setup()";
+        };
+
+        # markview on the runtimepath makes obsidian.nvim skip its own UI
+        obsidian = {
+          data = pkgs.vimPlugins.obsidian-nvim;
+          config = ''
+            require('obsidian').setup({
+              legacy_commands = false,
+              picker = { name = 'telescope.nvim' },
+              workspaces = {
+                { name = 'zettelkasten', path = '~/Documents/zettelkasten' },
+              },
+              -- Vault convention: Inbox/YYYYMMDDHHMM-kebab-case-title.md
+              notes_subdir = 'Inbox',
+              new_notes_location = 'notes_subdir',
+              note_id_func = function(title)
+                local id = os.date('%Y%m%d%H%M')
+                if title ~= nil and vim.trim(title) ~= ''' then
+                  id = id .. '-' .. require('obsidian.builtin').title_to_slug(title)
+                end
+                return id
+              end,
+              -- Templates own the frontmatter; don't inject id/aliases or re-sort keys
+              frontmatter = { enabled = false },
+              templates = { folder = '_Metadata/templates' },
+              daily_notes = {
+                folder = 'Output/daily-notes',
+                template = 'daily.md',
+              },
+              unique_note = { format = 'YYYYMMDDHHmm' },
+            })
+          '';
+        };
+
         telescope = [
           pkgs.vimPlugins.plenary-nvim
           pkgs.vimPlugins.telescope-nvim

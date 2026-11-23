@@ -20,6 +20,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    zettk-cli = {
+      url = "path:/Users/mlabrecque/Development/zettk-cli";
+      flake = false;
+    };
+
     # VPS and homelab: stable
     nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-26.05";
 
