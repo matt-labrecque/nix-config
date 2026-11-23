@@ -80,6 +80,9 @@
                 template = 'daily.md',
               },
               unique_note = { format = 'YYYYMMDDHHmm' },
+              -- `ob` is only on PATH on the Mac (home/darwin/neovim.nix);
+              -- without it the plugin prompts an npm install into the store
+              sync = { enabled = vim.fn.executable('ob') == 1 },
             })
           '';
         };

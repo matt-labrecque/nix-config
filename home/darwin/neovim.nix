@@ -13,10 +13,14 @@
         '';
       };
 
+
       runtimePkgs = with pkgs; [
         tinymist
         websocat
-
+        # `ob`, the CLI obsidian.nvim's sync backend runs (not the desktop
+        # app's `obsidian` CLI); unstable-only, hence not in the shared spec
+        obsidian-headless
+		typst
       ];
     };
 }
