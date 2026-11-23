@@ -19,6 +19,7 @@
     fastfetch
     ffmpeg
     tmux
+	typst
   ];
 
   home.sessionPath = [
