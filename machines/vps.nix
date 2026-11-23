@@ -7,6 +7,7 @@
     ./hardware/ovh-vps.nix
     ../modules/server/tuwunel.nix
     ../modules/server/tailscale.nix
+	../modules/servers/freshrss.nix
   ];
 
   boot.loader.grub = {
