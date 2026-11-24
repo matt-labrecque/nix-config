@@ -18,11 +18,11 @@
       devShells = forAllSystems (pkgs: {
         default = pkgs.mkShell {
           packages = with pkgs; [
-				gcc
+            gcc
           ];
 
           shellHook = ''
-				echo "gcc $(gcc --version)"
+            				echo "gcc $(gcc --version)"
           '';
         };
       });

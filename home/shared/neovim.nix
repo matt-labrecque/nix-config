@@ -24,21 +24,12 @@
           config = "vim.cmd.colorscheme('kanagawa')";
         };
 
-        # lualine's automatic theme follows the active colorscheme
-        lualine = {
-          data = pkgs.vimPlugins.lualine-nvim;
-          after = [ "kanagawa" ];
-          config = "require('lualine').setup()";
-        };
-
         mini = {
           data = pkgs.vimPlugins.mini-nvim;
-          config = "require('mini.starter').setup()";
-        };
-
-        oil = {
-          data = pkgs.vimPlugins.oil-nvim;
-          config = "require('oil').setup()";
+          config = "require('mini.starter').setup();
+		  require('mini.statusline').setup();
+		  require('mini.files').setup();
+		  require('mini.pick').setup();";
         };
 
         autoclose = {
@@ -46,19 +37,22 @@
           config = "require('autoclose').setup()";
         };
 
-        # Splitview (edit left, preview right): <leader>s, mapped in nvim/init.lua
-        markview = {
-          data = pkgs.vimPlugins.markview-nvim;
-          config = "require('markview').setup()";
+		render-markdown = {
+		data = pkgs.vimPlugins.render-markdown-nvim;
+		config = "require('render-markdown').setup()";
+		};
+
+        noice = {
+          data = pkgs.vimPlugins.noice-nvim;
+          config = "require('noice').setup()";
         };
 
-        # markview on the runtimepath makes obsidian.nvim skip its own UI
         obsidian = {
           data = pkgs.vimPlugins.obsidian-nvim;
           config = ''
             require('obsidian').setup({
               legacy_commands = false,
-              picker = { name = 'telescope.nvim' },
+              picker = { name = 'mini.pick' },
               workspaces = {
                 { name = 'zettelkasten', path = '~/Documents/zettelkasten' },
               },

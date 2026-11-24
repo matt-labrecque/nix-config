@@ -32,8 +32,9 @@ vim.api.nvim_create_autocmd('LspAttach', {
 
 -- Custom Keybinds
 vim.keymap.set('n', '<bs>', ':edit #<cr>', { silent = true })
-vim.keymap.set('n', '<leader>T', '<cmd>Telescope fd<cr>', {desc = "Open Telescope"})
+vim.keymap.set('n', '<leader>t', '<cmd>Telescope fd<cr>', {desc = "Open Telescope"})
 vim.keymap.set('n', '<leader>s', '<cmd>Markview splitToggle<cr>', { desc = 'Toggle markview splitview' })
+vim.keymap.set('n', '<leader>f', '<cmd>lua MiniFiles.open()<cr>', {desc = "Open MiniFiles"})
 
 -- Additional customization
 vim.opt.number = true

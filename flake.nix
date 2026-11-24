@@ -181,6 +181,10 @@
           path = ./templates/julia;
           description = "Julia from the official binary (julia-bin)";
         };
+        c = {
+          path = ./templates/c;
+          description = "GCC for compiling and running C/C++ programs";
+        };
       };
     };
 }
