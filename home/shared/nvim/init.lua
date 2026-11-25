@@ -2,14 +2,13 @@
 vim.o.number = true
 vim.o.relativenumber = true
 vim.o.swapfile = false
-vim.o.tabstop = 4
 vim.o.smoothscroll = true
+vim.o.showmode = false
+vim.o.tabstop = 2
 vim.o.textwidth = 80
 vim.o.colorcolumn = "80"
-vim.o.showmode = false
 
--- Import plugin files. Namespaced under config/ so they don't shadow the
--- plugins' own modules (require('obsidian') would load this file instead).
+-- Import plugin files
 require('config.plugins')
 require('config.mini')
 require('config.obsidian')
