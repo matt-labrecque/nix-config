@@ -32,7 +32,7 @@ Imported by `mkDarwin` in this order:
 | Module | Purpose |
 | --- | --- |
 | `modules/shared` | `allowUnfree`, flakes, `trusted-users`, `nix.optimise`, `nix.gc` (30 days), zsh |
-| `modules/darwin` | Host platform, fonts, agenix CLI, `system.defaults`, Homebrew import |
+| `modules/darwin` | Host platform, fonts, agenix CLI, local `zk` package, `system.defaults`, Homebrew import |
 | `modules/darwin/homebrew.nix` | Homebrew casks (see below) |
 | `machines/macbook-air.nix` | Hostname only |
 | agenix darwin module | `age.secrets` on the system level (not used directly on this Mac) |
@@ -50,6 +50,9 @@ Home Manager for this user imports `home/darwin/default.nix`, which imports
 - **Fonts:** `nerd-fonts.caskaydia-cove`.
 - **Defaults:** Press and Hold disabled (`NSGlobalDomain.ApplePressAndHoldEnabled = false`).
 - **agenix CLI:** installed system-wide for editing `secrets/`.
+- **zk:** built from the local `/Users/mlabrecque/Development/zk` checkout through
+  the `zk` path input and installed system-wide. That checkout must exist when
+  evaluating this configuration.
 - **Revision:** `system.configurationRevision` is set to the flake's git revision.
 
 ## Homebrew
@@ -63,11 +66,11 @@ before the first switch.
 `modules/darwin/homebrew.nix` on each switch, including its preferences and
 support files.** Install GUI apps through the file, not by hand.
 
-Declared casks (15):
+Declared casks (16):
 
 `anki`, `balenaetcher`, `claude`, `element`, `ghostty`, `gimp`,
 `helium-browser`, `musicbrainz-picard`, `prismlauncher`, `qbittorrent`,
-`rectangle`, `rstudio`, `steam`, `tailscale-app`, `vesktop`
+`rectangle`, `rstudio`, `steam`, `tailscale-app`, `vesktop`, `vlc`
 
 Taps and brews lists are empty.
 
@@ -85,12 +88,12 @@ Shared (`home/shared`, applies to every Home Manager user in this repo):
 
 Mac-only (`home/darwin`):
 
-- Packages: `fastfetch`, `ffmpeg`, `tmux`, and the `nix-init` script.
+- Packages: `fastfetch`, `ffmpeg`, `tmux`, `typst`, and the `nix-init` script.
 - `sessionPath`: `~/go/bin`, `~/.local/bin`, `~/.lmstudio/bin`, `~/.cargo/bin`.
 - `OBSIDIAN_VAULT=~/Documents/zettelkasten`.
 - Activation creates `~/Development`.
 - Shell aliases: `nrd` (`npm run dev`), `cdzk`, `cdd` (`~/Development`),
-  `cdh` (`~/Homework`), `cdnix` (checkout), `rebuild`, `vps-sync`.
+  `cdh` (`~/Homework`), `cdnix` (checkout), `nixedit`, `rebuild`, `vps-sync`.
 - Ghostty config (`home/darwin/ghostty.nix`): font `CaskaydiaCove NF`, size 14,
   background opacity 0.9. The app itself comes from the `ghostty` cask
   (`package = null`).
@@ -100,8 +103,8 @@ Mac-only (`home/darwin`):
 
 ### Neovim
 
-`home/shared/nvim` is a plain Lua config (`init.lua`, `lua/config/plugins.lua`,
-`lua/config/obsidian.lua`) that works dropped into `~/.config/nvim` on any
+`home/shared/nvim` is a plain Lua config (`init.lua` and `lua/config/`) that
+works dropped into `~/.config/nvim` on any
 system with Neovim 0.12+ and git. Plugins install with `vim.pack` on first
 start at the revisions in `nvim-pack-lock.json`; update them with
 `:lua vim.pack.update()`.
@@ -111,14 +114,13 @@ start at the revisions in `nvim-pack-lock.json`; update them with
 writes lockfile changes back into the repo; commit them. It also puts
 `tinymist`, `websocat` (for typst-preview), and `ob` on nvim's PATH.
 
-Home Manager supplies the binary with `git` and `tree-sitter` on its PATH
-(parsers build with Xcode's `cc`). Node, Python, and Ruby providers are
-disabled.
+Home Manager supplies the binary with `git` and `tree-sitter` on its PATH.
+Node, Python, and Ruby providers are disabled.
 
 ### Project shells
 
     mkdir my-project && cd my-project
-    nix-init <go|julia|node|python|rust>
+    nix-init <c|go|julia|node|python|rust>
 
 `nix-init` runs `nix flake init -t <checkout>#<lang>`, locks the project's
 `nixpkgs` to this system's nixpkgs revision, and runs `direnv allow`. Templates
@@ -129,15 +131,14 @@ are described in [monorepo-structure.md](monorepo-structure.md#templates-and-nix
 Mac secrets use agenix through Home Manager.
 
 - Identity: `~/.ssh/id_ed25519` (`age.identityPaths`). Its public key must be a
-  recipient in `secrets/secrets.nix`. Checked during this write-up: the local
-  `~/.ssh/id_ed25519.pub` matches the only recipient key in `secrets/secrets.nix`.
-- Secret: `secrets/github-email.age` → `age.secrets.github-email`, decrypted
-  into the per-user temp directory and exposed through git's `includes`.
+  recipient in `secrets/secrets.nix`.
+- Secret: `secrets/github-email.age` → `age.secrets.github-email`, decrypted to
+  `~/.config/git/github-email` as a regular file (`symlink = false`) and exposed
+  through git's `includes`.
 
 ## Setup from scratch
 
-1. Install Homebrew (not automated by this repo; `homebrew.nix` refers to a
-   `mac_bootstrap.sh` that does not exist in the repo or its git history).
+1. Install Homebrew (not automated by this repo).
 2. Place `~/.ssh/id_ed25519` (must match a recipient in `secrets/secrets.nix`).
 3. Clone the repo to `~/Development/nix-config`.
 4. First switch (`darwin-rebuild` does not exist yet):
@@ -169,13 +170,10 @@ or script in the repo.
 
 ### Update inputs
 
-    nix flake update nixpkgs nix-darwin home-manager omp
+    nix flake update nixpkgs nix-darwin home-manager omp agenix
 
-This is the list in the root `README.md`. `agenix` and `wrappers` are not in
-the list; updating them requires a separate `nix flake update <input>` (or a
-bare `nix flake update`, which updates all inputs).
-
-Commit `flake.lock` after a successful switch.
+The `zk` input points at the local `~/Development/zk` checkout rather than a
+remote branch. Commit `flake.lock` together with intentional input updates.
 
 ### Cleanup
 
@@ -200,6 +198,4 @@ Commit `flake.lock` after a successful switch.
 
 ## Open items
 
-- The working tree has uncommitted changes, including the staged
-  `secrets/github-email.age` and the deletion of `machines/mac-mini.nix`.
 - No backup configuration exists in the repo for this machine.

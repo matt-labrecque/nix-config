@@ -18,12 +18,12 @@ conventions behind it. Per-machine details:
 | `formatter.aarch64-darwin`, `formatter.x86_64-linux` | `nixfmt-tree` (`nix fmt`) | `flake.nix` |
 | `checks.aarch64-darwin.macbook-air` | system toplevel | `flake.nix` |
 | `checks.x86_64-linux.ovh-vps` | system toplevel | `flake.nix` |
-| `templates.{rust,python,node,go,julia}` | project flakes | `templates/<lang>/` |
+| `templates.{c,go,julia,node,python,rust}` | project flakes | `templates/<lang>/` |
 
-Output names are the keys passed to `mkDarwin` / `mkNixos`. The machine file
-is chosen by the argument, not the output name. Example: `ovh-vps = mkNixos
-"vps"` uses `machines/vps.nix`. The comment in `flake.nix` says the output name
-selects the file; that is only true for `macbook-air` and `homelab`.
+The `mkDarwin` / `mkNixos` argument selects `machines/<machine>.nix`; the
+enclosing attribute selects the flake output name. Example: `ovh-vps = mkNixos
+"vps"` uses `machines/vps.nix`. The comment in `flake.nix` conflates these two
+names, which match only for `macbook-air` and `homelab`.
 
 `homelab` is not in `checks`.
 
@@ -35,6 +35,7 @@ selects the file; that is only true for `macbook-air` and `homelab`.
 | `nix-darwin` | `nix-darwin/master` | `nixpkgs` | macOS system |
 | `home-manager` | `nix-community/home-manager` `master` | `nixpkgs` | Mac user profile |
 | `omp` | `can1357/oh-my-pi` | `nixpkgs` | `home/darwin/omp.nix` |
+| `zk` | `path:/Users/mlabrecque/Development/zk`, `flake = false` | — | Custom `zk` package on the Mac |
 | `nixpkgs-stable` | `nixos-26.05` | — | Servers |
 | `home-manager-stable` | `release-26.05` | `nixpkgs-stable` | Server user profile |
 | `disko` | `nix-community/disko` | `nixpkgs-stable` | VPS disk layout |
@@ -47,6 +48,10 @@ Two channels:
 
 `agenix` follows unstable nixpkgs but is also used on the stable NixOS
 systems. `flake.lock` pins all of it.
+
+`zk` is a non-flake `path:` input, so evaluating the Darwin configuration
+requires that local checkout. `home/darwin/zk.nix` builds it and
+`modules/darwin/default.nix` installs it as a system package.
 
 ## How a system is assembled
 
@@ -100,15 +105,15 @@ flake.nix                 inputs, builders, outputs, templates
 flake.lock                pinned inputs (commit after updating)
 machines/
   macbook-air.nix         hostname
-  vps.nix                 OVH VPS: networking, SSH, imports Tuwunel and Tailscale
-  homelab.nix             homelab: imports every server module
+  vps.nix                 OVH VPS: networking, SSH, Tuwunel, Tailscale, FreshRSS
+  homelab.nix             homelab: imports enabled server modules (Immich excluded)
   hardware/
     ovh-vps.nix           hardware config (nixos-generate-config style)
     ovh-vps-disk.nix      disko layout for /dev/sda
     homelab.nix           PLACEHOLDER until the homelab is installed
 modules/
   shared/                 both OSes: nix settings, GC, zsh, unfree
-  darwin/                 nix-darwin: fonts, defaults, agenix CLI
+  darwin/                 nix-darwin: fonts, defaults, agenix CLI, local zk package
     homebrew.nix          casks (cleanup = "zap")
   linux/                  NixOS: user, sudo, SSH key
   server/                 one module per homelab/VPS service, plus shared pieces
@@ -124,6 +129,7 @@ home/
     shell.nix             zsh, starship, bat, fzf, direnv
     neovim.nix            Neovim binary and the tools its config needs
     nvim/                 plain Lua config, plugins via vim.pack
+    nvim.old/             previous Lua configuration; not imported
   darwin/                 Mac-only Home Manager; imports ../shared
     default.nix           imports, Mac packages, PATH, OBSIDIAN_VAULT
     shell.nix             Mac aliases (rebuild, vps-sync, cdnix, ...)
@@ -132,6 +138,7 @@ home/
     neovim.nix            links nvim/ from the checkout; typst/obsidian tools
     nix-init.nix          project scaffolding command
     omp.nix               omp module
+    zk.nix                package definition for the local zk path input
   starship.toml           prompt config
 templates/                per-language project flakes for nix-init
 secrets/
@@ -192,8 +199,8 @@ agenix throughout.
 4. On NixOS, the decrypted file is at `/run/agenix/<name>`. Services reference
    that path directly.
 
-On macOS, Home Manager declares secrets with `path = ...`. See the known issue
-in [macbook-air.md](macbook-air.md#known-issue-the-secret-path-overwrites-the-repo-file).
+On macOS, Home Manager decrypts `github-email` to
+`~/.config/git/github-email` (`symlink = false`), which Git includes.
 
 ### State versions
 
@@ -208,8 +215,9 @@ Do not change these without reading the release notes:
 
 `home/shared/nvim` is a standalone Lua config: plugins install with `vim.pack`
 at the revisions in `nvim-pack-lock.json`, so the directory works as
-`~/.config/nvim` on any distro with Neovim 0.12+ and git. nvim-treesitter
-builds parsers when `tree-sitter` and `cc` are on PATH.
+`~/.config/nvim` on any distro with Neovim 0.12+ and git. It configures
+Kanagawa, mini.nvim, autoclose, render-markdown, nvim-lspconfig, obsidian.nvim,
+and typst-preview.nvim. `nvim.old/` is not imported.
 
 `home/shared/neovim.nix` (`programs.neovim`) installs the binary with `git`,
 `tree-sitter`, and (Linux) `gcc` on its PATH, and copies the config into the
@@ -228,20 +236,28 @@ system's revision, and runs `direnv allow`.
 
 | Template | Shell contents |
 | --- | --- |
+| `c` | `clangd` |
 | `rust` | Toolchain from `rust-toolchain.toml` via `rust-overlay` |
 | `python` | `python3`, `uv` (uses the pinned interpreter), `ruff`, `pyright` |
 | `node` | `nodejs_24`, `bun` |
 | `go` | `go`, `gopls`, `gotools`, `delve`; `GOBIN` is `./.bin` |
 | `julia` | Official `julia-bin` |
 
-The `nix-init` usage string lists `go|julia|node|python|rust` by hand. Update it
-when a template is added.
+The `nix-init` usage string lists `go|julia|node|python|rust` by hand and
+currently omits `c`, although `nix-init c` works because the script checks only
+the argument count. Update the string when a template is added.
 
 ## Commands
 
     nix fmt                 format all Nix files (nixfmt-tree)
-    nix flake check         evaluate and build the checks listed above
-    nix flake update <input>...
+    nix flake check         build checks for the current system only
+    nix eval --raw .#darwinConfigurations.macbook-air.config.system.build.toplevel.drvPath
+    nix eval --raw .#nixosConfigurations.ovh-vps.config.system.build.toplevel.drvPath
+    nix eval --raw .#nixosConfigurations.homelab.config.system.build.toplevel.drvPath
+
+On the Mac, evaluate the Linux outputs rather than building them. Evaluating
+`homelab` currently warns that `system.stateVersion` is unset; this is expected
+until the machine is installed.
 
 Machine-specific rebuild commands are in each machine document.
 
@@ -264,21 +280,13 @@ These steps follow from the layout above.
   `flake.nix`, and the language name in the `nix-init` usage string
   (`home/darwin/nix-init.nix`).
 
-## Current state
+## Open items
 
-These are facts about the repo as it stands. Each one is covered in more detail
-in the machine documents.
-
-- The working tree has uncommitted changes, including the deletion of
-  `machines/mac-mini.nix` and a staged `secrets/github-email.age` whose
-  working-tree copy is a symlink. `mac-mini` is not in `flake.nix`, so it is not
-  documented here.
-- The root `README.md` still describes the Mac mini and uses the domain
-  `home.mlabrecque.dev`. The code uses `lab.mlabrecque.dev`. The README was left
-  unchanged as requested.
-- `home/darwin/omp.nix` does not match the code (see
-  [macbook-air.md](macbook-air.md#open-items)).
-- `modules/darwin/homebrew.nix` refers to `mac_bootstrap.sh`, which is not in
-  the repo or its history.
-- `secrets/secrets.nix` defines a `users` list that is not used.
+- The VPS imports `freshrss.nix` without the options, Caddy snippet, domain, and
+  secret that module requires. See
+  [ovh-vps.md](ovh-vps.md#known-issues-and-open-items).
+- `templates/c/flake.nix` describes itself as a Go shell although it provides
+  `clangd`; the `nix-init` usage string also omits `c`.
+- The root `README.md` lists `darwinConfigurations.mac-mini`, but `flake.nix`
+  defines no such output.
 - No backup configuration exists anywhere in the repo.

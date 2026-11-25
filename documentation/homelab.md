@@ -38,10 +38,6 @@ is not in that list.
 Service URLs use the pattern `https://<name>.lab.mlabrecque.dev`. The dashboard
 is at `https://lab.mlabrecque.dev`.
 
-The root `README.md` still says `home.mlabrecque.dev`. That does not match
-`homelab.domain` in `machines/homelab.nix`, which is `lab.mlabrecque.dev`.
-This document follows the code.
-
 ## Network and access
 
 ### Access model
@@ -193,9 +189,9 @@ Steps in the order the repo's comments require:
 4. Set `networking.hostName` if `nixos` is not wanted.
 5. `sudo tailscale up`, then set `homelab.tailscaleIPv4` (see DNS above).
 6. Add the host key and provision secrets (see Secrets above).
-7. Rebuild on the homelab. The repo does not document the deploy command for
-   this host. The VPS pattern is `sudo nixos-rebuild switch --flake .#homelab`
-   [INFERENCE: not written down in the repo].
+7. Rebuild on the homelab:
+
+       sudo nixos-rebuild switch --flake .#homelab
 
 ## Maintenance
 
@@ -203,13 +199,11 @@ Steps in the order the repo's comments require:
 
     sudo nixos-rebuild switch --flake .#homelab
 
-[INFERENCE: same pattern as the VPS; not documented for this host.]
-
 ### Update inputs
 
-    nix flake update nixpkgs-stable home-manager-stable disko
+    nix flake update nixpkgs-stable home-manager-stable disko agenix
 
-Same list as the root README. `agenix` is not included.
+Commit `flake.lock` together with intentional input updates.
 
 ### State version
 
@@ -230,12 +224,13 @@ Unit names follow the NixOS module defaults. Confirm on the host.
 ### Format and check
 
     nix fmt
-    nix flake check
+    nix eval --raw .#nixosConfigurations.homelab.config.system.build.toplevel.drvPath
 
 The homelab is not in `checks`, so `nix flake check` does not build its system
-toplevel. Build it explicitly if needed:
-
-    nix build .#nixosConfigurations.homelab.config.system.build.toplevel
+toplevel. On the Mac, evaluate it with the command above rather than trying to
+build an x86_64-linux system locally. The `system.stateVersion is not set`
+warning is expected until the hardware placeholder is replaced and the machine
+is configured for installation.
 
 ## Known issues and open items
 
@@ -247,5 +242,3 @@ toplevel. Build it explicitly if needed:
   VPS, which is retired after cutover.
 - Immich is not imported.
 - No backup configuration exists in the repo for `/srv` or any service state.
-- The root `README.md` domain (`home.mlabrecque.dev`) and its Homelab services
-  table are out of date.

@@ -1,7 +1,8 @@
 # OVH VPS (`ovh-vps`)
 
-NixOS server that hosts the public Matrix homeserver (Tuwunel) and Tailscale.
-For the repo layout, see [monorepo-structure.md](monorepo-structure.md).
+NixOS server for the public Matrix homeserver (Tuwunel), Tailscale, and an
+incompletely wired FreshRSS service. For the repo layout, see
+[monorepo-structure.md](monorepo-structure.md).
 
 ## Identity
 
@@ -72,13 +73,24 @@ style). It imports `qemu-guest.nix` and sets the initrd and kernel modules.
 Caddy is enabled by this module. HTTPS certificates come from Caddy's default
 behavior for public hostnames; the repo sets no explicit TLS options.
 
+### FreshRSS
+
+`machines/vps.nix` imports `modules/server/freshrss.nix`, which enables FreshRSS
+through PHP-FPM and Caddy at `rss.${homelab.domain}`. It applies the
+tailnet-only Caddy snippet and reads its admin password from
+`/run/agenix/freshrss-admin`.
+
+The VPS does not provide the module's dependencies, so this currently prevents
+evaluation; see [Known issues and open items](#known-issues-and-open-items).
+
 ### Tailscale
 
 `modules/server/tailscale.nix`: `services.tailscale.enable = true`. Join the
 tailnet once after the first switch with `sudo tailscale up`.
 
-The VPS does not import `modules/server/caddy.nix`, so the `import tailnet`
-snippet is not available on this host. No tailnet-only services run here.
+The Matrix vhosts are public and do not use the `import tailnet` snippet.
+FreshRSS tries to use that snippet, but the VPS imports neither
+`modules/server/caddy.nix` nor `modules/server/options.nix`.
 
 ## Setup
 
@@ -104,16 +116,12 @@ From the MacBook Air, in its checkout (`vps-sync` alias, defined in
 
     nix run nixpkgs#nixos-rebuild -- switch --flake .#ovh-vps --target-host mlabrecque@ovh-vps --build-host root@ovh-vps
 
-The root README uses `USER@IP_ADDRESS` in place of the host names. Both forms
-connect to the same machine.
-
 ### Update inputs
 
-    nix flake update nixpkgs-stable home-manager-stable disko
+    nix flake update nixpkgs-stable home-manager-stable disko agenix
 
-Only the stable-branch inputs are listed in the root README. `agenix` (which
-follows unstable nixpkgs) is not included. Commit `flake.lock` after a
-successful deploy.
+`agenix` follows the unstable `nixpkgs` input even though the VPS uses stable
+NixOS. Commit `flake.lock` after a successful deploy.
 
 ### State version
 
@@ -128,9 +136,10 @@ does not change it. The comment in `machines/vps.nix` says so explicitly.
 ### Format and check
 
     nix fmt
-    nix flake check
+    nix eval --raw .#nixosConfigurations.ovh-vps.config.system.build.toplevel.drvPath
 
-`checks.x86_64-linux.ovh-vps` builds the system toplevel.
+`checks.x86_64-linux.ovh-vps` builds the system toplevel when `nix flake check`
+runs on x86_64-linux. On the Mac, use the evaluation command above instead.
 
 ### Checking the Matrix stack
 
@@ -139,11 +148,15 @@ does not change it. The comment in `machines/vps.nix` says so explicitly.
 
 ## Known issues and open items
 
+- The VPS configuration cannot evaluate FreshRSS as imported: `freshrss.nix` reads
+  `config.homelab.domain` and applies `import tailnet`, but the VPS imports
+  neither `options.nix` nor `caddy.nix` and sets no `homelab.domain`. Remove the
+  import or provide those dependencies before deploying. FreshRSS also needs
+  the `freshrss-admin` secret, which is not provisioned.
 - The homelab config also imports `modules/server/tuwunel.nix` with the same
   `server_name`. Planned migration (owner decision, not encoded in the repo):
   the homelab replaces this VPS, and the VPS is retired after cutover.
-  `machines/homelab.nix` carries the matching comment. Both configs are
-  currently valid.
+  `machines/homelab.nix` carries the matching comment.
 - Root and login-user SSH keys are hard-coded (`TODO` for agenix).
 - No backup configuration exists in the repo. Matrix data is stored on the VPS
   disk.
