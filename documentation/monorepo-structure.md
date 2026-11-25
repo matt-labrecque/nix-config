@@ -39,7 +39,6 @@ selects the file; that is only true for `macbook-air` and `homelab`.
 | `home-manager-stable` | `release-26.05` | `nixpkgs-stable` | Server user profile |
 | `disko` | `nix-community/disko` | `nixpkgs-stable` | VPS disk layout |
 | `agenix` | `ryantm/agenix` | `nixpkgs` | Secrets (all machines) |
-| `wrappers` | `nix-community/nix-wrapper-modules` | `nixpkgs` | Neovim wrapper |
 
 Two channels:
 
@@ -123,14 +122,14 @@ home/
   shared/                 Home Manager for every machine
     default.nix           packages, EDITOR, stateVersion
     shell.nix             zsh, starship, bat, fzf, direnv
-    neovim.nix            Neovim wrapper and plugin specs
-    nvim/init.lua         options, keymaps, autocmds (copied to the store)
+    neovim.nix            Neovim binary and the tools its config needs
+    nvim/                 plain Lua config, plugins via vim.pack
   darwin/                 Mac-only Home Manager; imports ../shared
     default.nix           imports, Mac packages, PATH, OBSIDIAN_VAULT
     shell.nix             Mac aliases (rebuild, vps-sync, cdnix, ...)
     git.nix               git identity and agenix-managed email
     ghostty.nix           terminal config (app from Homebrew)
-    neovim.nix            typst-preview extras
+    neovim.nix            links nvim/ from the checkout; typst/obsidian tools
     nix-init.nix          project scaffolding command
     omp.nix               omp module
   starship.toml           prompt config
@@ -207,12 +206,19 @@ Do not change these without reading the release notes:
 
 ### Neovim
 
-Built by `nix-wrapper-modules` (`home/shared/neovim.nix`). The config directory
-is copied into the store, so Lua edits require a rebuild. Plugins come from
-`pkgs.vimPlugins`, so each machine gets the plugin versions from its own nixpkgs
-(unstable on the Macs, 26.05 on the servers).
+`home/shared/nvim` is a standalone Lua config: plugins install with `vim.pack`
+at the revisions in `nvim-pack-lock.json`, so the directory works as
+`~/.config/nvim` on any distro with Neovim 0.12+ and git. nvim-treesitter
+builds parsers when `tree-sitter` and `cc` are on PATH.
 
-Language servers are enabled only inside Nix shells that provide them.
+`home/shared/neovim.nix` (`programs.neovim`) installs the binary with `git`,
+`tree-sitter`, and (Linux) `gcc` on its PATH, and copies the config into the
+store without the lockfile, since `vim.pack` must write it: the servers get
+the latest plugin revisions on first start. The Mac links the checkout instead
+(`home/darwin/neovim.nix`), so it uses and updates the pinned lockfile.
+
+Language servers are enabled when installed; on machines with Nix only inside
+a Nix shell.
 
 ### Templates and `nix-init`
 
@@ -270,8 +276,7 @@ in the machine documents.
 - The root `README.md` still describes the Mac mini and uses the domain
   `home.mlabrecque.dev`. The code uses `lab.mlabrecque.dev`. The README was left
   unchanged as requested.
-- `home/darwin/omp.nix` and the `flake.nix` comment about the Neovim config
-  being linked out of the store do not match the code (see
+- `home/darwin/omp.nix` does not match the code (see
   [macbook-air.md](macbook-air.md#open-items)).
 - `modules/darwin/homebrew.nix` refers to `mac_bootstrap.sh`, which is not in
   the repo or its history.

@@ -112,8 +112,8 @@ connect to the same machine.
     nix flake update nixpkgs-stable home-manager-stable disko
 
 Only the stable-branch inputs are listed in the root README. `agenix` (which
-follows unstable nixpkgs) and `wrappers` are not included. Commit `flake.lock`
-after a successful deploy.
+follows unstable nixpkgs) is not included. Commit `flake.lock` after a
+successful deploy.
 
 ### State version
 

@@ -8,7 +8,7 @@
   ...
 }:
 let
-  zettk-cli = pkgs.callPackage ../../home/darwin/zettk-cli.nix { src = inputs.zettk-cli; };
+  zk = pkgs.callPackage ../../home/darwin/zk.nix { src = inputs.zk; };
 in
 {
   imports = [ ./homebrew.nix ];
@@ -25,7 +25,7 @@ in
   environment.systemPackages = [
     # agenix CLI for editing secrets/ (see secrets/secrets.nix)
     inputs.agenix.packages.${pkgs.stdenv.hostPlatform.system}.default
-    zettk-cli
+    zk
   ];
 
   system.defaults = {

@@ -68,9 +68,11 @@ Reference docs (read the relevant one before non-trivial changes):
   `modules/server/caddy.nix` imported on that machine; any module reading
   `config.homelab.*` needs `modules/server/options.nix`. The homelab imports
   both; the VPS imports neither.
-- Neovim config (`home/shared/nvim/init.lua`, plugin specs in
-  `home/shared/neovim.nix`) is copied into the store, so edits need a rebuild to
-  take effect.
+- Neovim config (`home/shared/nvim/`) must stay plain Lua that works outside
+  Nix: plugins go in the `vim.pack.add` list in `lua/config/plugins.lua`, not in
+  `pkgs.vimPlugins`. Nix only supplies the binary and tools on its PATH. The Mac
+  links the directory from the checkout; `vim.pack` rewrites
+  `nvim-pack-lock.json` there, so commit it with plugin changes.
 
 ## Verification
 

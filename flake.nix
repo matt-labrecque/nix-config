@@ -20,8 +20,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    zettk-cli = {
-      url = "path:/Users/mlabrecque/Development/zettk-cli";
+    zk = {
+      url = "path:/Users/mlabrecque/Development/zk";
       flake = false;
     };
 
@@ -40,13 +40,6 @@
 
     agenix = {
       url = "github:ryantm/agenix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    # Wrapped neovim (home/shared/neovim.nix). Wrapper modules build with the
-    # consuming system's pkgs; this nixpkgs only backs the library itself.
-    wrappers = {
-      url = "github:nix-community/nix-wrapper-modules";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };

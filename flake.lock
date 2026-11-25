@@ -315,8 +315,7 @@
         "nixpkgs": "nixpkgs",
         "nixpkgs-stable": "nixpkgs-stable",
         "omp": "omp",
-        "wrappers": "wrappers",
-        "zettk-cli": "zettk-cli"
+        "zk": "zk"
       }
     },
     "rust-overlay": {
@@ -414,36 +413,16 @@
         "type": "github"
       }
     },
-    "wrappers": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1795379121,
-        "narHash": "sha256-ozYI9QzZHThJ6gek0zw3U7VWtbij7GWMoIyKeVUHB04=",
-        "owner": "nix-community",
-        "repo": "nix-wrapper-modules",
-        "rev": "c35c43d2e5be66fe1172a1772fe81d1fa0a6ac96",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nix-community",
-        "repo": "nix-wrapper-modules",
-        "type": "github"
-      }
-    },
-    "zettk-cli": {
+    "zk": {
       "flake": false,
       "locked": {
-        "lastModified": 1795387346,
-        "narHash": "sha256-y3aAdpVdLnTCKlx4YbFfP5q/c7rKIqldliH4zjv7eoA=",
-        "path": "/Users/mlabrecque/Development/zettk-cli",
+        "lastModified": 1795563712,
+        "narHash": "sha256-dczzUYhPRxhEF/yAaZvum/xvBbZ+XKK+vDGZeGO1PuQ=",
+        "path": "/Users/mlabrecque/Development/zk",
         "type": "path"
       },
       "original": {
-        "path": "/Users/mlabrecque/Development/zettk-cli",
+        "path": "/Users/mlabrecque/Development/zk",
         "type": "path"
       }
     }

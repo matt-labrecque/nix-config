@@ -31,6 +31,7 @@
       "steam"
       "tailscale-app"
       "vesktop"
+      "vlc"
     ];
   };
 }

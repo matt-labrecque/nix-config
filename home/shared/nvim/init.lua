@@ -1,52 +1,37 @@
--- Plugins and their setup come from Nix (home/shared/neovim.nix and
--- home/darwin/neovim.nix). Their configuration runs after this file.
+-- General customization shit
+vim.o.number = true
+vim.o.relativenumber = true
+vim.o.swapfile = false
+vim.o.tabstop = 4
+vim.i.smoothscroll = true
+vim.o.textwidth = 80
+vim.o.colorcolumn = "80"
+vim.o.showmode = false
 
--- Treesitter highlighting; the plugin and grammars come from Nix.
--- Filetypes without a grammar keep regex highlighting.
-vim.api.nvim_create_autocmd('FileType', {
-  callback = function(args)
-    pcall(vim.treesitter.start, args.buf)
-  end,
-})
+-- Import plugin files
+require('plugins') --lua/plugins.lua
+require('mini') --lua/mini.lua
+require('obsidian') --lua/obsidian.lua
+require('typst-preview') --lua/typst-preview.lua
 
--- Format on save with any attached server that supports formatting.
--- Servers handling willSaveWaitUntil already edit the buffer on save.
-local lsp_format = vim.api.nvim_create_augroup('lsp_format_on_save', {})
-vim.api.nvim_create_autocmd('LspAttach', {
-  group = lsp_format,
-  callback = function(args)
-    local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
-    if client:supports_method('textDocument/willSaveWaitUntil')
-        or not client:supports_method('textDocument/formatting') then
-      return
-    end
-    vim.api.nvim_create_autocmd('BufWritePre', {
-      group = lsp_format,
-      buffer = args.buf,
-      callback = function()
-        vim.lsp.buf.format({ bufnr = args.buf, id = client.id, timeout_ms = 1000 })
-      end,
-    })
-  end,
-})
+-- Keymappings
+vim.keymap.set('n', '<leader>ff', '<cmd>Pick files<cr>',     { desc = 'Find files' })
+vim.keymap.set('n', '<leader>fg', '<cmd>Pick grep_live<cr>', { desc = 'Live grep' })
+vim.keymap.set('n', '<leader>fb', '<cmd>Pick buffers<cr>',   { desc = 'Buffers' })
+vim.keymap.set('n', '<leader>fh', '<cmd>Pick help<cr>',      { desc = 'Help tags' })
+vim.keymap.set('n', '<leader>fr', '<cmd>Pick resume<cr>',    { desc = 'Resume last picker' })
+vim.keymap.set('n', '<leader>e', function() MiniFiles.open(vim.api.nvim_buf_get_name(0)) end, { desc = 'Explorer (current file)' })
+vim.keymap.set('n', '<leader>E', function() MiniFiles.open(vim.uv.cwd()) end, { desc = 'Explorer (cwd)' })
 
--- Custom Keybinds
-vim.keymap.set('n', '<bs>', ':edit #<cr>', { silent = true })
-vim.keymap.set('n', '<leader>t', '<cmd>Telescope fd<cr>', {desc = "Open Telescope"})
-vim.keymap.set('n', '<leader>s', '<cmd>Markview splitToggle<cr>', { desc = 'Toggle markview splitview' })
-vim.keymap.set('n', '<leader>f', '<cmd>lua MiniFiles.open()<cr>', {desc = "Open MiniFiles"})
-
--- Additional customization
-vim.opt.number = true
-vim.opt.relativenumber = true
-vim.opt.smartcase = true
-vim.opt.tabstop = 4
-vim.opt.swapfile = false
-vim.opt.smoothscroll = true
-vim.opt.termguicolors = true
-vim.opt.linebreak = true
-vim.opt.breakindent = true
-vim.opt.textwidth = 80
-vim.opt.colorcolumn = "80"
-vim.opt.showmode = false
-vim.opt.showcmd = false
+-- Nix Shell Specific for LSP activation
+if vim.env.IN_NIX_SHELL ~= nil or vim.fn.executable('nix') == 0 then
+  if vim.fn.executable('gopls') == 1 then
+    vim.lsp.enable('gopls')
+  end
+  if vim.fn.executable('pyright-langserver') == 1 then
+    vim.lsp.enable('pyright')
+  end
+  if vim.fn.executable('clangd') == 1 then
+    vim.lsp.enable('clangd')
+  end
+end

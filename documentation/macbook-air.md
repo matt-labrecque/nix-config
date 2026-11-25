@@ -100,14 +100,20 @@ Mac-only (`home/darwin`):
 
 ### Neovim
 
-Built with `nix-wrapper-modules`. The config directory `home/shared/nvim`
-(currently `init.lua`) is copied into the Nix store, so every Lua edit needs a
-rebuild. Plugin setup lives in `home/shared/neovim.nix`. Mac-only additions in
-`home/darwin/neovim.nix`:
+`home/shared/nvim` is a plain Lua config (`init.lua`, `lua/config/plugins.lua`,
+`lua/config/obsidian.lua`) that works dropped into `~/.config/nvim` on any
+system with Neovim 0.12+ and git. Plugins install with `vim.pack` on first
+start at the revisions in `nvim-pack-lock.json`; update them with
+`:lua vim.pack.update()`.
 
-- `typst-preview` plugin, with `tinymist` and `websocat` on nvim's PATH.
+`home/darwin/neovim.nix` links `~/.config/nvim` to the checkout
+(`mkOutOfStoreSymlink`), so Lua edits apply without a switch and `vim.pack`
+writes lockfile changes back into the repo; commit them. It also puts
+`tinymist`, `websocat` (for typst-preview), and `ob` on nvim's PATH.
 
-Node, Python, and Ruby providers are disabled.
+Home Manager supplies the binary with `git` and `tree-sitter` on its PATH
+(parsers build with Xcode's `cc`). Node, Python, and Ruby providers are
+disabled.
 
 ### Project shells
 
@@ -153,7 +159,7 @@ or:
 
     sudo darwin-rebuild switch --flake ~/Development/nix-config#macbook-air
 
-Neovim, shell, and Ghostty config changes also need a switch.
+Shell and Ghostty config changes also need a switch; Neovim Lua edits do not.
 
 ### Roll back
 
@@ -196,8 +202,4 @@ Commit `flake.lock` after a successful switch.
 
 - The working tree has uncommitted changes, including the staged
   `secrets/github-email.age` and the deletion of `machines/mac-mini.nix`.
-- `flake.nix` says the `nvim` config is linked out of the store so `vim.pack`
-  can write its lockfile back to the repo. `home/shared/neovim.nix` copies it
-  into the store instead (`config_directory = ./nvim`). The flake comment
-  does not match the code.
 - No backup configuration exists in the repo for this machine.

@@ -209,7 +209,7 @@ Steps in the order the repo's comments require:
 
     nix flake update nixpkgs-stable home-manager-stable disko
 
-Same list as the root README. `agenix` and `wrappers` are not included.
+Same list as the root README. `agenix` is not included.
 
 ### State version
 
