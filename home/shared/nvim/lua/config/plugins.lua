@@ -1,7 +1,17 @@
+vim.api.nvim_create_autocmd('PackChanged', {
+  callback = function(ev)
+    local spec, kind = ev.data.spec, ev.data.kind
+    if spec.name == 'markdown-preview.nvim' and (kind == 'install' or kind == 'update') then
+      if not ev.data.active then vim.cmd.packadd('markdown-preview.nvim') end
+      vim.fn['mkdp#util#install']()
+    end
+  end,
+})
+
 vim.pack.add({
 		'https://github.com/rebelot/kanagawa.nvim',
-		'https://github.com/m4xshen/autoclose.nvim',
 		'https://github.com/MeanderingProgrammer/render-markdown.nvim',
+		'https://github.com/sammaji/markdown-preview.nvim',
 		'https://github.com/neovim/nvim-lspconfig',
 })
 
@@ -9,5 +19,4 @@ vim.pack.add({
 vim.cmd.colorscheme('kanagawa')
 
 -- Activate remaining plugins
-require('autoclose').setup()
 require('render-markdown').setup()

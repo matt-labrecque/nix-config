@@ -31,4 +31,4 @@ require('mini.pick').setup()
 require('mini.git').setup()
 require('mini.diff').setup()
 require('mini.completion').setup()
-
+require('mini.pairs').setup()
