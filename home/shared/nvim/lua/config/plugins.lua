@@ -13,6 +13,7 @@ vim.pack.add({
 		'https://github.com/MeanderingProgrammer/render-markdown.nvim',
 		'https://github.com/sammaji/markdown-preview.nvim',
 		'https://github.com/neovim/nvim-lspconfig',
+		'https://github.com/folke/snacks.nvim',
 })
 
 -- Set color scheme to Kanagawa
@@ -20,3 +21,13 @@ vim.cmd.colorscheme('kanagawa')
 
 -- Activate remaining plugins
 require('render-markdown').setup()
+require('snacks').setup ({ 
+    image = {
+				enabled = true,
+				doc = {
+								enabled = true, 
+								inline = true, 
+								float = true
+				},
+		},
+})
