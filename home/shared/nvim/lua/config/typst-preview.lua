@@ -1,4 +1,4 @@
-vim.pack.add('https://github.com/chomosuke/typst-preview.nvim')
+vim.pack.add({'https://github.com/chomosuke/typst-preview.nvim'})
 
 require('typst-preview').setup({
   -- Binaries on PATH win over the plugin's own download (nil = download)

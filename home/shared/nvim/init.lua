@@ -3,16 +3,17 @@ vim.o.number = true
 vim.o.relativenumber = true
 vim.o.swapfile = false
 vim.o.tabstop = 4
-vim.i.smoothscroll = true
+vim.o.smoothscroll = true
 vim.o.textwidth = 80
 vim.o.colorcolumn = "80"
 vim.o.showmode = false
 
--- Import plugin files
-require('plugins') --lua/plugins.lua
-require('mini') --lua/mini.lua
-require('obsidian') --lua/obsidian.lua
-require('typst-preview') --lua/typst-preview.lua
+-- Import plugin files. Namespaced under config/ so they don't shadow the
+-- plugins' own modules (require('obsidian') would load this file instead).
+require('config.plugins')
+require('config.mini')
+require('config.obsidian')
+require('config.typst-preview')
 
 -- Keymappings
 vim.keymap.set('n', '<leader>ff', '<cmd>Pick files<cr>',     { desc = 'Find files' })
