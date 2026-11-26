@@ -6,7 +6,7 @@ conventions behind it. Per-machine details:
 
 - [macbook-air.md](macbook-air.md)
 - [ovh-vps.md](ovh-vps.md)
-- [homelab.md](homelab.md)
+- [homelab/](homelab/README.md)
 
 ## Flake outputs
 
@@ -271,7 +271,8 @@ These steps follow from the layout above.
   secrets.
 - **Homelab service:** add `modules/server/<name>.nix` following the server
   pattern. Import it in `machines/homelab.nix`. Add it to the dashboard list in
-  `modules/server/homepage.nix`.
+  `modules/server/homepage.nix`. Full recipe:
+  [homelab/operations.md](homelab/operations.md#adding-a-service).
 - **Mac cask:** add it to `modules/darwin/homebrew.nix`. Undeclared casks are
   removed on the next switch.
 - **Mac package:** add it to `home/darwin/default.nix`. For a package every

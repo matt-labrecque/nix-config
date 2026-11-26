@@ -178,6 +178,11 @@
           path = ./templates/c;
           description = "GCC for compiling and running C/C++ programs";
         };
+
+        zig = {
+          path = ./templates/zig;
+          description = "Zig from Nix unstable";
+        };
       };
     };
 }

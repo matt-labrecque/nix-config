@@ -7,8 +7,11 @@ Reference docs (read the relevant one before non-trivial changes):
 
 - `documentation/monorepo-structure.md`: layout, builders, specialArgs, layers,
   conventions, "adding things" recipes
-- `documentation/macbook-air.md`, `documentation/ovh-vps.md`,
-  `documentation/homelab.md`: per-machine details, deploy steps, open items
+- `documentation/macbook-air.md`, `documentation/ovh-vps.md`: per-machine
+  details, deploy steps, open items
+- `documentation/homelab/`: homelab docs split by topic (start at `README.md`;
+  `architecture.md`, `network.md`, `services.md`, `storage.md`, `secrets.md`,
+  `setup.md`, `operations.md`, `open-items.md`, `RECOVERY.md`)
 
 ## Map
 

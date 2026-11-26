@@ -1,5 +1,5 @@
 {
-  description = "Go dev shell";
+  description = "C/C++ dev shell";
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 

@@ -25,6 +25,8 @@
       "helium-browser"
       "musicbrainz-picard"
       "prismlauncher"
+      "protonvpn"
+      "proton-mail-bridge"
       "qbittorrent"
       "rectangle"
       "rstudio"
