@@ -1,4 +1,4 @@
-# Shared media library for Jellyfin, the *arr apps, and qBittorrent.
+# Shared media library for Jellyfin and Audiobookshelf.
 # Directories are setgid so new files stay in the media group.
 { config, ... }:
 let
@@ -14,8 +14,8 @@ in
 
   systemd.tmpfiles.settings."10-media" = {
     ${root}.d = dir;
-    "${root}/downloads".d = dir;
     "${root}/movies".d = dir;
     "${root}/tv".d = dir;
+    "${root}/audiobooks".d = dir;
   };
 }

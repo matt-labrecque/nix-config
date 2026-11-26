@@ -3,6 +3,8 @@
 # Tailscale's address ranges, so it stays private even though port 443 is
 # public for Matrix (tuwunel.nix). Trust Caddy's root certificate on your
 # devices: /var/lib/caddy/.local/share/caddy/pki/authorities/local/root.crt
+# Vhosts for homelab.services entries with a port are generated here.
+{ config, lib, ... }:
 {
   services.caddy = {
     enable = true;
@@ -13,6 +15,15 @@
         abort @outside
       }
     '';
+    virtualHosts = lib.mapAttrs' (
+      sub: port:
+      lib.nameValuePair "${sub}.${config.homelab.domain}" {
+        extraConfig = ''
+          import tailnet
+          reverse_proxy 127.0.0.1:${toString port}
+        '';
+      }
+    ) config.homelab.services;
   };
 
   networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 443 ];

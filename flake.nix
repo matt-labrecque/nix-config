@@ -20,7 +20,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # VPS and homelab: stable
+    # Homelab: stable
     nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-26.05";
 
     home-manager-stable = {
@@ -39,94 +39,47 @@
       self,
       nixpkgs,
       nix-darwin,
-      home-manager,
       nixpkgs-stable,
-      home-manager-stable,
-      agenix,
       ...
     }:
-    let
-      # Home Manager runs as a system module on every machine. Both layers
-      # receive the same specialArgs.
-      homeManagerConfig = specialArgs: homeModule: {
-        home-manager = {
-          useGlobalPkgs = true;
-          useUserPackages = true;
-          # Existing files like ~/.zshrc are moved aside instead of failing activation
-          backupFileExtension = "before-nix";
-          extraSpecialArgs = specialArgs;
-          # age.* options for user-level secrets on every machine
-          sharedModules = [ agenix.homeManagerModules.default ];
-          users.${specialArgs.username} = import homeModule;
-        };
-      };
-
-      # machine: flake output name; also selects machines/<machine>.nix
-      mkDarwin =
-        machine:
-        let
-          # macOS account name (short name) and its home folder differ, so
-          # the home folder is set explicitly rather than derived.
-          username = "mlabrecqu";
-          homeDirectory = "/Users/mlabrecque";
+    {
+      darwinConfigurations = {
+        macbook-air = nix-darwin.lib.darwinSystem {
           specialArgs = {
-            inherit
-              self
-              inputs
-              machine
-              username
-              homeDirectory
-              ;
+            inherit self inputs;
+            # Flake output name; the `rebuild` alias needs it because the
+            # hostname (MattBook) differs.
+            machine = "macbook-air";
+            # macOS account name (short name) and its home folder differ, so
+            # the home folder is set explicitly rather than derived.
+            username = "mlabrecqu";
+            homeDirectory = "/Users/mlabrecque";
             # Absolute path to this checkout. Used for out-of-store symlinks
             # (e.g. nvim, so vim.pack can write its lockfile back into the repo).
-            configDir = "${homeDirectory}/Development/nix-config";
+            configDir = "/Users/mlabrecque/Development/nix-config";
           };
-        in
-        nix-darwin.lib.darwinSystem {
-          inherit specialArgs;
           modules = [
             ./modules/shared
             ./modules/darwin
-            ./machines/${machine}.nix
-            agenix.darwinModules.default
-            home-manager.darwinModules.home-manager
-            (homeManagerConfig specialArgs ./home/darwin)
+            ./machines/macbook-air.nix
           ];
         };
-
-      mkNixos =
-        machine:
-        let
-          username = "mlabrecque";
-          specialArgs = {
-            inherit
-              self
-              inputs
-              machine
-              username
-              ;
-            homeDirectory = "/home/${username}";
-          };
-        in
-        nixpkgs-stable.lib.nixosSystem {
-          inherit specialArgs;
-          modules = [
-            ./modules/shared
-            ./modules/linux
-            ./machines/${machine}.nix
-            agenix.nixosModules.default
-            home-manager-stable.nixosModules.home-manager
-            (homeManagerConfig specialArgs ./home/shared)
-          ];
-        };
-    in
-    {
-      darwinConfigurations = {
-        macbook-air = mkDarwin "macbook-air";
       };
 
       nixosConfigurations = {
-        homelab = mkNixos "homelab";
+        homelab = nixpkgs-stable.lib.nixosSystem {
+          specialArgs = {
+            inherit self inputs;
+            machine = "homelab";
+            username = "mlabrecque";
+            homeDirectory = "/home/mlabrecque";
+          };
+          modules = [
+            ./modules/shared
+            ./modules/linux
+            ./machines/homelab.nix
+          ];
+        };
       };
 
       formatter = {
@@ -138,7 +91,7 @@
         aarch64-darwin = {
           macbook-air = self.darwinConfigurations.macbook-air.config.system.build.toplevel;
         };
-        x86_64-linux.ovh-vps = self.nixosConfigurations.ovh-vps.config.system.build.toplevel;
+        x86_64-linux.homelab = self.nixosConfigurations.homelab.config.system.build.toplevel;
       };
 
       # Per-project dev shells; scaffold with `nix-init <lang>` (home/darwin/nix-init.nix)

@@ -8,7 +8,11 @@
   ...
 }:
 {
-  imports = [ ./homebrew.nix ];
+  imports = [
+    inputs.home-manager.darwinModules.home-manager
+    inputs.agenix.darwinModules.default
+    ./homebrew.nix
+  ];
 
   nixpkgs.hostPlatform = "aarch64-darwin";
 
@@ -16,6 +20,9 @@
   system.primaryUser = username;
   # Home Manager takes home.username and home.homeDirectory from this user
   users.users.${username}.home = homeDirectory;
+
+  home-manager.extraSpecialArgs = { inherit configDir; };
+  home-manager.users.${username} = ../../home/darwin;
 
   fonts.packages = [ pkgs.nerd-fonts.caskaydia-cove ];
 

@@ -1,3 +1,7 @@
+# Public Matrix homeserver for mlabrecque.dev on matrix.mlabrecque.dev
+# (forward 80 and 443 on the router). The mlabrecque.dev vhost belongs to
+# website.nix; this only adds the well-known handler, which Caddy matches
+# before the site's catch-all `handle`.
 let
   domain = "mlabrecque.dev";
   port = 6167;
@@ -28,7 +32,9 @@ in
       reverse_proxy /_matrix/* ${upstream}
     '';
     virtualHosts.${domain}.extraConfig = ''
-      reverse_proxy /.well-known/matrix/* ${upstream}
+      handle /.well-known/matrix/* {
+        reverse_proxy ${upstream}
+      }
     '';
   };
 
@@ -36,5 +42,4 @@ in
     80
     443
   ];
-
 }

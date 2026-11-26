@@ -37,8 +37,5 @@ in
     }
   ];
 
-  services.caddy.virtualHosts.${hostName}.extraConfig = ''
-    import tailnet
-    reverse_proxy 127.0.0.1:${toString port}
-  '';
+  homelab.services.nextcloud = port;
 }
