@@ -7,9 +7,6 @@
   configDir,
   ...
 }:
-let
-  zk = pkgs.callPackage ./zk.nix { src = inputs.zk; };
-in
 {
   imports = [ ./homebrew.nix ];
 
@@ -25,7 +22,6 @@ in
   environment.systemPackages = [
     # agenix CLI for editing secrets/ (see secrets/secrets.nix)
     inputs.agenix.packages.${pkgs.stdenv.hostPlatform.system}.default
-    zk
   ];
 
   system.defaults = {

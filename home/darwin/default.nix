@@ -18,7 +18,6 @@
   home.packages = with pkgs; [
     fastfetch
     ffmpeg
-    tmux
     typst
     tinymist
   ];

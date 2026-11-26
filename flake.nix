@@ -20,21 +20,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    zk = {
-      url = "path:/Users/mlabrecque/Development/zk";
-      flake = false;
-    };
-
     # VPS and homelab: stable
     nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-26.05";
 
     home-manager-stable = {
       url = "github:nix-community/home-manager/release-26.05";
-      inputs.nixpkgs.follows = "nixpkgs-stable";
-    };
-
-    disko = {
-      url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs-stable";
     };
 

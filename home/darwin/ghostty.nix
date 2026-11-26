@@ -7,7 +7,7 @@
     package = null;
     settings = {
       font-family = "CaskaydiaCove NF";
-      font-size = 14;
+      font-size = 16;
       background-opacity = 0.9;
     };
   };
