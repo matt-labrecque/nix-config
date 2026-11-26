@@ -136,7 +136,6 @@
       };
 
       nixosConfigurations = {
-        ovh-vps = mkNixos "vps";
         homelab = mkNixos "homelab";
       };
 

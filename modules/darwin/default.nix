@@ -8,7 +8,7 @@
   ...
 }:
 let
-  zk = pkgs.callPackage ../../home/darwin/zk.nix { src = inputs.zk; };
+  zk = pkgs.callPackage ./zk.nix { src = inputs.zk; };
 in
 {
   imports = [ ./homebrew.nix ];

@@ -20,6 +20,7 @@
     ffmpeg
     tmux
     typst
+    tinymist
   ];
 
   home.sessionPath = [

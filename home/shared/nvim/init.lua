@@ -11,7 +11,6 @@ vim.o.colorcolumn = "80"
 -- Import plugin files
 require('config.plugins')
 require('config.mini')
-require('config.obsidian')
 require('config.typst-preview')
 
 -- Keymappings

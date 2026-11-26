@@ -14,11 +14,6 @@
   };
 
   programs.neovim.extraPackages = with pkgs; [
-    # Used by typst-preview instead of its own downloads
-    tinymist
     websocat
-    # `ob`, the CLI obsidian.nvim's sync backend runs (not the desktop
-    # app's `obsidian` CLI); unstable-only, hence not in the shared module
-    obsidian-headless
   ];
 }
