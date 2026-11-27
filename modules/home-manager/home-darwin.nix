@@ -1,3 +1,4 @@
+# Mac-only additions to home.nix
 {
   config,
   pkgs,
@@ -5,16 +6,6 @@
   ...
 }:
 {
-  imports = [
-    ../shared
-    ./shell.nix
-    ./git.nix
-    ./ghostty.nix
-    ./neovim.nix
-    ./nix-init.nix
-    ./omp.nix
-  ];
-
   home.packages = with pkgs; [
     fastfetch
     ffmpeg

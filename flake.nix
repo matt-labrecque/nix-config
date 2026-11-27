@@ -2,7 +2,7 @@
   description = "Matt Labrecque's Monorepo for Nix Configurations'";
 
   inputs = {
-	  # Unstable nixpkgs for Mac/Development
+    # Unstable nixpkgs for Mac/Development
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 
     nix-darwin = {
@@ -25,9 +25,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-		# Stable nixpkgs for Homelab 
+    # Stable nixpkgs for Homelab
     nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-26.05";
-    
+
     home-manager-stable = {
       url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs-stable";
@@ -60,8 +60,7 @@
             configDir = "/Users/mlabrecque/Development/nix-config";
           };
           modules = [
-            ./modules/shared
-            ./modules/darwin
+            ./modules/darwin.nix
             ./machines/macbook-air.nix
           ];
         };
@@ -76,8 +75,7 @@
             homeDirectory = "/home/mlabrecque";
           };
           modules = [
-            ./modules/shared
-            ./modules/linux
+            ./modules/server.nix
             ./machines/homelab.nix
           ];
         };
@@ -95,7 +93,7 @@
         x86_64-linux.homelab = self.nixosConfigurations.homelab.config.system.build.toplevel;
       };
 
-      # Per-project dev shells; scaffold with `nix-init <lang>` (homeManagerModules/darwin/nix-init.nix)
+      # Per-project dev shells; scaffold with `nix-init <lang>` (modules/home-manager/nix-init.nix)
       templates = {
         rust = {
           path = ./templates/rust;

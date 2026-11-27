@@ -1,5 +1,5 @@
-# System settings common to nix-darwin and NixOS. The OS modules import the
-# Home Manager and agenix modules and set home-manager.users.
+# System settings common to nix-darwin and NixOS. darwin.nix and server.nix
+# import the Home Manager and agenix modules and set home-manager.users.
 {
   self,
   inputs,
