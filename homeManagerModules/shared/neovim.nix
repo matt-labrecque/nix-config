@@ -1,6 +1,6 @@
 # Neovim binary and the tools its config needs. nvim/ is plain Lua that
 # installs its own plugins with vim.pack, so it works unchanged outside Nix.
-# home/darwin/neovim.nix links it from the checkout instead of the store.
+# homeManagerModules/darwin/neovim.nix links it from the checkout instead of the store.
 { lib, pkgs, ... }:
 {
   programs.neovim = {

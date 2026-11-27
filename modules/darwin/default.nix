@@ -22,7 +22,7 @@
   users.users.${username}.home = homeDirectory;
 
   home-manager.extraSpecialArgs = { inherit configDir; };
-  home-manager.users.${username} = ../../home/darwin;
+  home-manager.users.${username} = ../../homeManagerModules/darwin;
 
   fonts.packages = [ pkgs.nerd-fonts.caskaydia-cove ];
 

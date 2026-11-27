@@ -2,7 +2,7 @@
   description = "Matt Labrecque's Monorepo for Nix Configurations'";
 
   inputs = {
-    # Macs: unstable
+	  # Unstable nixpkgs for Mac/Development
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 
     nix-darwin = {
@@ -20,18 +20,19 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Homelab: stable
-    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-26.05";
+    agenix = {
+      url = "github:ryantm/agenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
+		# Stable nixpkgs for Homelab 
+    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-26.05";
+    
     home-manager-stable = {
       url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs-stable";
     };
 
-    agenix = {
-      url = "github:ryantm/agenix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs =
@@ -94,7 +95,7 @@
         x86_64-linux.homelab = self.nixosConfigurations.homelab.config.system.build.toplevel;
       };
 
-      # Per-project dev shells; scaffold with `nix-init <lang>` (home/darwin/nix-init.nix)
+      # Per-project dev shells; scaffold with `nix-init <lang>` (homeManagerModules/darwin/nix-init.nix)
       templates = {
         rust = {
           path = ./templates/rust;

@@ -14,10 +14,10 @@ NixOS homelab (`homelab`), with Home Manager running as a system module on both.
 | NixOS user account, sudo, SSH keys | `modules/linux/default.nix` |
 | A homelab service | new file in `modules/server/`, imported from `machines/homelab.nix` |
 | Host-specific values (hostname, enabled services, `homelab.*` options) | `machines/<name>.nix` |
-| User packages, shell, CLI tools on every machine | `home/shared/` |
-| User config only on the Mac (git, ghostty, aliases) | `home/darwin/` |
-| Neovim behaviour and plugins | `home/shared/nvim/` (Lua) |
-| Tools Neovim shells out to | `programs.neovim.extraPackages` in `home/shared/neovim.nix` or `home/darwin/neovim.nix` |
+| User packages, shell, CLI tools on every machine | `homeManagerModules/shared/` |
+| User config only on the Mac (git, ghostty, aliases) | `homeManagerModules/darwin/` |
+| Neovim behaviour and plugins | `homeManagerModules/shared/nvim/` (Lua) |
+| Tools Neovim shells out to | `programs.neovim.extraPackages` in `homeManagerModules/shared/neovim.nix` or `homeManagerModules/darwin/neovim.nix` |
 | A project dev-shell template | `templates/<lang>/` and the `templates` attrset in `flake.nix` |
 
 Each machine is defined inline in `flake.nix` (`darwinConfigurations.macbook-air`,
@@ -36,7 +36,7 @@ Flakes only see files tracked by git. After creating a file, run
 | --- | --- |
 | Anything on the Mac side | `nix build .#darwinConfigurations.macbook-air.system --no-link` |
 | Anything on the homelab side | `nix eval .#nixosConfigurations.homelab.config.system.build.toplevel.drvPath` |
-| `modules/shared`, `home/shared` | both of the above |
+| `modules/shared`, `homeManagerModules/shared` | both of the above |
 | A template | `nix flake init -t <repo>#<lang>` in a temp dir, then `nix develop -c true` |
 | Any `.nix` file | `nix fmt` (nixfmt-tree) |
 
@@ -51,8 +51,8 @@ need sudo and change the live system. Leave activation to the user.
 
 - Do not change `system.stateVersion` or `home.stateVersion`.
 - Do not run `nix flake update` or edit `flake.lock` unless asked.
-- Do not edit `home/shared/nvim/nvim-pack-lock.json` by hand; `vim.pack`
-  writes it.
+- Do not edit `homeManagerModules/shared/nvim/nvim-pack-lock.json` by hand;
+  `vim.pack` writes it.
 - `machines/hardware/homelab.nix` is a placeholder that only exists so the
   flake evaluates. Do not add real hardware settings to it; it gets replaced by
   `nixos-generate-config` output.
@@ -95,7 +95,7 @@ without the user's SSH key, so never write or modify `.age` files. To add one:
 1. Add the recipients to `secrets/secrets.nix`.
 2. Ask the user to run `cd secrets && agenix -e <name>.age`.
 3. Reference it with `age.secrets.<name>.file = ../secrets/<name>.age;`
-   (system level) or under Home Manager (user level, see `home/darwin/git.nix`).
+   (system level) or under Home Manager (user level, see `homeManagerModules/darwin/git.nix`).
 
 Several homelab modules carry commented-out `age.secrets` blocks waiting for
 the homelab's host key; leave them commented until that key is in
@@ -103,7 +103,7 @@ the homelab's host key; leave them commented until that key is in
 
 ## Neovim
 
-`home/shared/nvim/` is plain Lua and must keep working without Nix. Plugins are
+`homeManagerModules/shared/nvim/` is plain Lua and must keep working without Nix. Plugins are
 added with `vim.pack.add` in `lua/config/plugins.lua`, never through Home
 Manager. On the Mac `~/.config/nvim` is an out-of-store symlink to the checkout,
 so Lua edits need no rebuild. Language servers come from project dev shells,
@@ -114,5 +114,5 @@ not the system profile.
 A template needs `flake.nix` (same `forAllSystems` shape as the others,
 `nixpkgs-unstable`), an `.envrc` containing `use flake`, and a `.gitignore`
 with at least `.direnv/`. Register it in the `templates` attrset in `flake.nix`,
-add it to the usage string in `home/darwin/nix-init.nix`, and add a row to the
+add it to the usage string in `homeManagerModules/darwin/nix-init.nix`, and add a row to the
 README table.

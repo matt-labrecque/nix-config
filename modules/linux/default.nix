@@ -23,5 +23,5 @@
   # The user has no password; SSH key auth is the only way in
   security.sudo.wheelNeedsPassword = false;
 
-  home-manager.users.${username} = ../../home/shared;
+  home-manager.users.${username} = ../../homeManagerModules/shared;
 }
