@@ -7,7 +7,7 @@
     inputs.agenix.nixosModules.default
     ./nix/settings.nix
     ./nixos/user.nix
-		./nixos/networking.nix
+    ./nixos/networking.nix
   ];
 
   home-manager.users.${username}.imports = [

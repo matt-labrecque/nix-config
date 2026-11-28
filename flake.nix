@@ -107,6 +107,10 @@
           path = ./templates/node;
           description = "Node.js with bun";
         };
+        astro = {
+          path = ./templates/astro;
+          description = "Astro site dev shell (Node.js toolchain with bun)";
+        };
         go = {
           path = ./templates/go;
           description = "Go with gopls, gotools and delve";

@@ -12,7 +12,7 @@ let
     name = "nix-init";
     text = ''
       if [[ $# -ne 1 ]]; then
-        echo "usage: nix-init <go|julia|node|python|rust|c|zig>" >&2
+        echo "usage: nix-init <astro|c|go|julia|node|python|rust|zig>" >&2
         exit 1
       fi
       nix flake init -t "${configDir}#$1"
