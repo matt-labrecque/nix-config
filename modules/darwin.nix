@@ -29,9 +29,6 @@
     ./home-manager/shell.nix
     ./home-manager/neovim.nix
     # Mac only
-    ./home-manager/home-darwin.nix
-    ./home-manager/shell-darwin.nix
-    ./home-manager/neovim-darwin.nix
     ./home-manager/git.nix
     ./home-manager/ghostty.nix
     ./home-manager/nix-init.nix

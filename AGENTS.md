@@ -14,9 +14,9 @@ NixOS homelab (`homelab`), with Home Manager running as a system module on both.
 | A homelab service | new file in `modules/nixos/`, imported from `modules/server.nix` |
 | Host-specific values (hostname, enabled services) | `machines/<name>.nix` |
 | User packages, shell, CLI tools on every machine | `modules/home-manager/`, listed in both `modules/darwin.nix` and `modules/server.nix` |
-| User config only on the Mac (git, ghostty, aliases) | `modules/home-manager/` (Mac-only additions to a shared file go in `<name>-darwin.nix`), listed only in `modules/darwin.nix` |
+| User config only on the Mac (git, ghostty, aliases) | Mac-only additions to a shared file go in its `lib.mkIf isDarwin` block; Mac-only files go in `modules/home-manager/`, listed only in `modules/darwin.nix` |
 | Neovim behaviour and plugins | `modules/home-manager/nvim/` (Lua) |
-| Tools Neovim shells out to | `programs.neovim.extraPackages` in `modules/home-manager/neovim.nix` or `modules/home-manager/neovim-darwin.nix` |
+| Tools Neovim shells out to | `programs.neovim.extraPackages` in `modules/home-manager/neovim.nix` (shared list, or the `isDarwin` block for Mac-only tools) |
 | A project dev-shell template | `templates/<lang>/` and the `templates` attrset in `flake.nix` |
 
 Each machine is defined inline in `flake.nix` (`darwinConfigurations.macbook-air`,
